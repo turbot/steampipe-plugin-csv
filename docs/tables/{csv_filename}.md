@@ -38,3 +38,39 @@ select
 from
   "My complex file-name"
 ```
+
+### Query specific columns
+
+Columns are always in text form when read from the CSV file. The column names come from the first row of the file.
+
+```sql
+select
+  first_name,
+  last_name
+from
+  users
+```
+
+If your column names are complex, use identifier quotes:
+
+```sql
+select
+  "First Name",
+  "Last Name"
+from
+  users
+```
+
+### Casting column data for analysis
+
+Text columns can be easily cast to other types:
+
+```sql
+select
+  first_name,
+  age::int as iage
+from
+  users
+where
+  iage > 25
+```
