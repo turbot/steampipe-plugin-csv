@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -54,15 +55,33 @@ func csvList(ctx context.Context, p *plugin.Plugin) ([]string, error) {
 		return csvFilePaths, errors.New("paths must be configured")
 	}
 
+	// File system context
+	home, err := os.UserHomeDir()
+	if err != nil {
+		plugin.Logger(ctx).Error("csvList", "os.UserHomeDir error. ~ will not be expanded in paths.", err)
+	}
+
 	// Gather file path matches for the glob
 	var matches []string
 	paths := csvConfig.Paths
 	for _, i := range paths {
+
+		// Resolve ~ to home dir
+		if home != "" {
+			if i == "~" {
+				i = home
+			} else if strings.HasPrefix(i, "~/") {
+				i = filepath.Join(home, i[2:])
+			}
+		}
+
+		// Expand globs
 		iMatches, err := filepath.Glob(i)
 		if err != nil {
 			// Fail if any path is an invalid glob
 			return matches, fmt.Errorf("path is not a valid glob: %s", i)
 		}
+
 		matches = append(matches, iMatches...)
 	}
 
