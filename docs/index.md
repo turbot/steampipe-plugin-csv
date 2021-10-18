@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/csv.svg"
-brand_color: "#00b050"
+brand_color: "#000000"
 display_name: "CSV"
 short_name: "csv"
 description: "Steampipe plugin to query data from CSV files."
