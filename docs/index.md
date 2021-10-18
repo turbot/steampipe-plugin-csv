@@ -12,9 +12,9 @@ og_image: "/images/plugins/turbot/csv-social-graphic.png"
 
 # CSV + Steampipe
 
-[CSV](https://csv.com) is a cloud hosting company that provides virtual private servers and other infrastructure services.
+A comma-separated values (CSV) file is a delimited text file that contains records of data.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+[Steampipe](https://steampipe.io) is an open source CLI to instantly query data using SQL.
 
 Query data from the `my_users.csv` file:
 
