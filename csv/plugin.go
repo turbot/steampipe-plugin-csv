@@ -54,8 +54,9 @@ func csvList(ctx context.Context, p *plugin.Plugin) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// Glob paths in config
-	// set current working directory if no paths are specified
+	// set current working directory as default path if no paths are specified
 	csvConfig := GetConfig(p.Connection)
 	if &csvConfig == nil || csvConfig.Paths == nil {
 		paths = append(paths, cwd+"/*")
