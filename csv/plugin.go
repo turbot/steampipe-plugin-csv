@@ -2,7 +2,6 @@ package csv
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -48,12 +47,20 @@ func PluginTables(ctx context.Context, p *plugin.Plugin) (map[string]*plugin.Tab
 func csvList(ctx context.Context, p *plugin.Plugin) ([]string, error) {
 
 	var csvFilePaths []string
+	var paths []string
 
+	// fetch current working directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
 	// Glob paths in config
-	// Fail if no paths are specified
+	// set current working directory if no paths are specified
 	csvConfig := GetConfig(p.Connection)
 	if &csvConfig == nil || csvConfig.Paths == nil {
-		return csvFilePaths, errors.New("paths must be configured")
+		paths = append(paths, cwd+"/*")
+	} else {
+		paths = csvConfig.Paths
 	}
 
 	// File system context
@@ -64,7 +71,7 @@ func csvList(ctx context.Context, p *plugin.Plugin) ([]string, error) {
 
 	// Gather file path matches for the glob
 	var matches []string
-	paths := csvConfig.Paths
+
 	for _, i := range paths {
 
 		// Resolve ~ to home dir
