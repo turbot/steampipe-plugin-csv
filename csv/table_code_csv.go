@@ -12,13 +12,13 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/plugin/transform"
 )
 
-func tableCSV(ctx context.Context, p *plugin.Plugin) *plugin.Table {
+func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
 
 	path := ctx.Value("path").(string)
 	csvFile, err := os.Open(path)
 	if err != nil {
-		plugin.Logger(ctx).Error("Could not open CSV file", "path", path)
-		panic(err)
+		plugin.Logger(ctx).Error("csv.tableCSV", "os_open_error", err, "path", path)
+		return nil, err
 	}
 
 	r := csv.NewReader(csvFile)
@@ -37,14 +37,20 @@ func tableCSV(ctx context.Context, p *plugin.Plugin) *plugin.Table {
 		}
 	}
 
-	// Read the header to peak at the column names
+	// Read the header to peek at the column names
 	header, err := r.Read()
 	if err != nil {
-		plugin.Logger(ctx).Error("Error parsing CSV header:", "path", path, "header", header, "err", err)
-		panic(err)
+		plugin.Logger(ctx).Error("csv.tableCSV", "header_parse_error", err, "path", path, "header", header)
+		return nil, err
 	}
+
 	cols := []*plugin.Column{}
 	for idx, i := range header {
+		// Table column names cannot be empty strings
+		if len(i) == 0 {
+			plugin.Logger(ctx).Error("csv.tableCSV", "empty_header_error", "header row has empty value", "path", path, "field", idx)
+			return nil, fmt.Errorf("%s header row has empty value in field %d", path, idx)
+		}
 		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(i), Description: fmt.Sprintf("Field %d.", idx)})
 	}
 
@@ -55,7 +61,7 @@ func tableCSV(ctx context.Context, p *plugin.Plugin) *plugin.Table {
 			Hydrate: listCSVWithPath(path),
 		},
 		Columns: cols,
-	}
+	}, nil
 }
 
 func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -84,7 +90,7 @@ func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData,
 
 		header, err := r.Read()
 		if err != nil {
-			plugin.Logger(ctx).Error("Error parsing CSV header:", "path", path, "header", header, "err", err)
+			plugin.Logger(ctx).Error("csv.listCSVWithPath", "header_parse_error", err, "path", path, "header", header)
 			return nil, err
 		}
 
@@ -94,7 +100,7 @@ func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData,
 				break
 			}
 			if err != nil {
-				plugin.Logger(ctx).Error("Error parsing CSV record:", "path", path, "record", record, "err", err)
+				plugin.Logger(ctx).Error("csv.listCSVWithPath", "record_parse_error", err, "path", path, "record", record)
 				continue
 			}
 			row := map[string]string{}

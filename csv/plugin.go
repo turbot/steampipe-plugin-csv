@@ -39,7 +39,11 @@ func PluginTables(ctx context.Context, p *plugin.Plugin) (map[string]*plugin.Tab
 	for _, i := range paths {
 		tableCtx := context.WithValue(ctx, "path", i)
 		base := filepath.Base(i)
-		tables[base[0:len(base)-len(filepath.Ext(base))]] = tableCSV(tableCtx, p)
+		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, p)
+		if err != nil {
+			plugin.Logger(ctx).Error("csv.PluginTables", "create_table_error", err, "path", i)
+			return nil, err
+		}
 	}
 
 	return tables, nil
@@ -59,7 +63,7 @@ func csvList(ctx context.Context, p *plugin.Plugin) ([]string, error) {
 	// File system context
 	home, err := os.UserHomeDir()
 	if err != nil {
-		plugin.Logger(ctx).Error("csvList", "os.UserHomeDir error. ~ will not be expanded in paths.", err)
+		plugin.Logger(ctx).Error("csv.csvList", "os.UserHomeDir error. ~ will not be expanded in paths.", err)
 	}
 
 	// Gather file path matches for the glob
