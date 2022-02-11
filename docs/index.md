@@ -23,10 +23,10 @@ select
   first_name,
   last_name
 from
-  my_users
+  my_users;
 ```
 
-```
+```sh
 +------------+-----------+
 | first_name | last_name |
 +------------+-----------+
@@ -60,11 +60,36 @@ Installing the latest csv plugin will create a config file (`~/.steampipe/config
 ```hcl
 connection "csv" {
   plugin = "csv"
-  paths  = [ "/path/to/your/files/*.csv" ]
+
+  # Paths is a list of locations to search for CSV files
+  # All paths are resolved relative to the current working directory (CWD)
+  # Wildcard based searches are supported, including recursive searches
+
+  # For example:
+  #  - "*.csv" matches all CSV files in the CWD
+  #  - "**/*.csv" matches all CSV files in the CWD and all sub-directories
+  #  - "../*.csv" matches all CSV files in the CWD's parent directory
+  #  - "steampipe*.csv" matches all CSV files starting with "steampipe" in the current CWD
+  #  - "/path/to/dir/*.csv" matches all CSV files in a specific directory
+  #  - "/path/to/dir/custom.csv" matches a specific file
+
+  # If paths includes "*", all files (including non-CSV files) in
+  # the current CWD will be matched, which may cause errors if incompatible filetypes exist
+
+  # Defaults to CWD
+  paths = [ "*.csv" ]
+
+  # The field delimiter character when parsing CSV files. Must be a single
+  # character. Defaults to comma.
+  # separator = ","
+
+  # If set, then lines beginning with the comment character without preceding
+  # whitespace are ignored. Disabled by default.
+  # comment = "#"
 }
 ```
 
-- `paths` - A list of directory paths to search for CSV files. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match). File matches must have the extension `.csv` (case insensitive).
+- `paths` - A list of directory paths to search for CSV files. Paths are resolved relative to the current working directory. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also support `**` for recursive matching. Defaults to the current working directory.
 - `separator` - Field delimiter when parsing files. Defaults to `,`.
 - `comment` - Lines starting with this comment character are ignored. Disabled by default.
 

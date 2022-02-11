@@ -1,12 +1,23 @@
 connection "csv" {
   plugin = "csv"
 
-  # Paths is a list of locations to search for CSV files. Each file will be
-  # converted to a table. Wildcards are supported per
-  # https://golang.org/pkg/path/filepath/#Match
-  # Exact file paths can have any name. Wildcard based matches must have an
-  # extension of .csv (case insensitive).
-  # paths = [ "/path/to/dir/*", "/path/to/exact/custom.csv" ]
+  # Paths is a list of locations to search for CSV files
+  # All paths are resolved relative to the current working directory (CWD)
+  # Wildcard based searches are supported, including recursive searches
+
+  # For example:
+  #  - "*.csv" matches all CSV files in the CWD
+  #  - "**/*.csv" matches all CSV files in the CWD and all sub-directories
+  #  - "../*.csv" matches all CSV files in the CWD's parent directory
+  #  - "steampipe*.csv" matches all CSV files starting with "steampipe" in the current CWD
+  #  - "/path/to/dir/*.csv" matches all CSV files in a specific directory
+  #  - "/path/to/dir/custom.csv" matches a specific file
+
+  # If paths includes "*", all files (including non-CSV files) in
+  # the current CWD will be matched, which may cause errors if incompatible filetypes exist
+
+  # Defaults to CWD
+  paths = [ "*.csv" ]
 
   # The field delimiter character when parsing CSV files. Must be a single
   # character. Defaults to comma.

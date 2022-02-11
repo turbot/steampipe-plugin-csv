@@ -41,7 +41,7 @@ func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
 	header, err := r.Read()
 	if err != nil {
 		plugin.Logger(ctx).Error("csv.tableCSV", "header_parse_error", err, "path", path, "header", header)
-		return nil, err
+		return nil, fmt.Errorf("failed to parse file header %s: %v", path, err)
 	}
 
 	cols := []*plugin.Column{}
