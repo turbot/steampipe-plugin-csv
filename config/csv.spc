@@ -9,12 +9,12 @@ connection "csv" {
   #  - "*.csv" matches all CSV files in the CWD
   #  - "**/*.csv" matches all CSV files in the CWD and all sub-directories
   #  - "../*.csv" matches all CSV files in the CWD's parent directory
-  #  - "steampipe*.csv" matches all CSV files starting with "steampipe" in the current CWD
+  #  - "steampipe*.csv" matches all CSV files starting with "steampipe" in the CWD
   #  - "/path/to/dir/*.csv" matches all CSV files in a specific directory
   #  - "/path/to/dir/custom.csv" matches a specific file
 
   # If paths includes "*", all files (including non-CSV files) in
-  # the current CWD will be matched, which may cause errors if incompatible filetypes exist
+  # the CWD will be matched, which may cause errors if incompatible file types exist
 
   # Defaults to CWD
   paths = [ "*.csv" ]
