@@ -89,7 +89,7 @@ connection "csv" {
 }
 ```
 
-- `paths` - A list of directory paths to search for CSV files. Paths are resolved relative to the current working directory. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also support `**` for recursive matching. Defaults to the current working directory.
+- `paths` - A list of directory paths to search for CSV files. Paths are resolved relative to the current working directory. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also supports `**` for recursive matching. Defaults to the current working directory.
 - `separator` - Field delimiter when parsing files. Defaults to `,`.
 - `comment` - Lines starting with this comment character are ignored. Disabled by default.
 
