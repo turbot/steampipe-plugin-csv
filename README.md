@@ -17,13 +17,12 @@ Install the plugin with [Steampipe](https://steampipe.io):
 steampipe plugin install csv
 ```
 
-Configure the paths to your CSV files in `~/.steampipe/config/csv.spc`:
+Configure your [config file](https://hub.steampipe.io/plugins/turbot/csv#configuration) to include directories with CSV files. If no directory is specified, the current working directory will be used.
 
-```hcl
-connection "csv" {
-  plugin = "csv"
-  paths  = [ "/path/to/your/files/*.csv" ]
-}
+Run steampipe:
+
+```shell
+steampipe query
 ```
 
 Run a query for the `my_users.csv` file:
@@ -33,7 +32,7 @@ select
   first_name,
   last_name
 from
-  my_users
+  my_users;
 ```
 
 ## Developing

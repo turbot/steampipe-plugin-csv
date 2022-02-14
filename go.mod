@@ -2,7 +2,10 @@ module github.com/turbot/steampipe-plugin-csv
 
 go 1.17
 
-require github.com/turbot/steampipe-plugin-sdk v1.8.2
+require (
+	github.com/bmatcuk/doublestar v1.3.4
+	github.com/turbot/steampipe-plugin-sdk v1.8.2
+)
 
 require (
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect

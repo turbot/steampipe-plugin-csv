@@ -4,19 +4,22 @@ Query data from CSV files. A table is automatically created to represent each
 CSV file found in the configured `paths`.
 
 For instance, if `paths` is set to `/Users/myuser/csv/*`, and that directory contains:
+
 - products.csv
 - users.csv
 
 This plugin will create 2 tables:
+
 - products
 - users
 
 Which you can then query directly:
+
 ```sql
 select
   *
 from
-  users
+  users;
 ```
 
 Each of these tables will have the same column structure as the CSV they were
@@ -27,6 +30,7 @@ created from and all column values are returned as text data type.
 ### Inspect the table structure
 
 Assuming your connection is called `csv` (the default), list all tables with:
+
 ```sql
 .inspect csv
 +----------+--------------------------------------------+
@@ -38,6 +42,7 @@ Assuming your connection is called `csv` (the default), list all tables with:
 ```
 
 To get defails for a specific table, inspect it by name:
+
 ```sql
 .inspect csv.users
 +------------+------+-------------+
@@ -57,7 +62,7 @@ Given the file `users.csv`, the query is:
 select
   *
 from
-  users
+  users;
 ```
 
 ### Query a complex file name
