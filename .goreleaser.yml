@@ -16,7 +16,7 @@ builds:
       - amd64
       - arm64
 
-    id: "steampipe-datadog"
+    id: "steampipe"
     binary: "{{ .ProjectName }}.plugin"
 
 archives:
