@@ -31,7 +31,7 @@ type key string
 
 const (
 	// keyPath has been added to avoid key collisions
-	keyPath = "path"
+	keyPath key = "path"
 )
 
 func PluginTables(ctx context.Context, p *plugin.Plugin) (map[string]*plugin.Table, error) {
