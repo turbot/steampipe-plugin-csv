@@ -27,13 +27,12 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 	return p
 }
 
-type key string 
+type key string
 
 const (
-	// KeyValue has been added to avoid key collisions
-    KeyValue key = "path"
+	// keyPath has been added to avoid key collisions
+	keyPath = "path"
 )
-
 
 func PluginTables(ctx context.Context, p *plugin.Plugin) (map[string]*plugin.Table, error) {
 	// Initialize tables
@@ -45,7 +44,7 @@ func PluginTables(ctx context.Context, p *plugin.Plugin) (map[string]*plugin.Tab
 		return nil, err
 	}
 	for _, i := range paths {
-		tableCtx := context.WithValue(ctx, KeyValue, i)
+		tableCtx := context.WithValue(ctx, keyPath, i)
 		base := filepath.Base(i)
 		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, p)
 		if err != nil {

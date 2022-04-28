@@ -14,7 +14,7 @@ import (
 
 func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
 
-	path := ctx.Value(KeyValue).(string)
+	path := ctx.Value(keyPath).(string)
 	csvFile, err := os.Open(path)
 	if err != nil {
 		plugin.Logger(ctx).Error("csv.tableCSV", "os_open_error", err, "path", path)
