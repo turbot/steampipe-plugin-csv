@@ -6,7 +6,7 @@ Use SQL to query data from CSV files.
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/csv)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/csv/tables)
-- Community: [Slack Channel](https://join.slack.com/t/steampipe/shared_invite/zt-oij778tv-lYyRTWOTMQYBVAbtPSWs3g)
+- Community: [Slack Channel](https://steampipe.io/community/join)
 - Get involved: [Issues](https://github.com/turbot/steampipe-plugin-csv/issues)
 
 ## Quick start
