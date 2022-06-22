@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/turbot/go-kit/helpers"
 	"github.com/turbot/steampipe-plugin-sdk/v3/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v3/plugin/transform"
@@ -51,7 +52,7 @@ func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
 			plugin.Logger(ctx).Error("csv.tableCSV", "empty_header_error", "header row has empty value", "path", path, "field", idx)
 			return nil, fmt.Errorf("%s header row has empty value in field %d", path, idx)
 		}
-		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(i), Description: fmt.Sprintf("Field %d.", idx)})
+		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(helpers.EscapePropertyName(i)), Description: fmt.Sprintf("Field %d.", idx)})
 	}
 
 	return &plugin.Table{
