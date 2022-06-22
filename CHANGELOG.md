@@ -1,3 +1,9 @@
+## v0.3.2 [2022-06-22]
+
+_Bug fixes_
+
+- Fixed the issue in the csv file tables where the column names in the header row containing a period returned `null`. ([#25](https://github.com/turbot/steampipe-plugin-csv/pull/25))
+
 ## v0.3.1 [2022-05-23]
 
 _Bug fixes_
