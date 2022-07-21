@@ -8,12 +8,12 @@ import (
 	"os"
 
 	"github.com/turbot/go-kit/helpers"
-	"github.com/turbot/steampipe-plugin-sdk/v3/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
-func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
+func tableCSV(ctx context.Context, p *plugin.Plugin, connection *plugin.Connection) (*plugin.Table, error) {
 
 	path := ctx.Value(keyPath).(string)
 	csvFile, err := os.Open(path)
@@ -24,7 +24,7 @@ func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
 
 	r := csv.NewReader(csvFile)
 
-	csvConfig := GetConfig(p.Connection)
+	csvConfig := GetConfig(connection)
 	if csvConfig.Separator != nil && *csvConfig.Separator != "" {
 		r.Comma = rune((*csvConfig.Separator)[0])
 	}
@@ -59,13 +59,13 @@ func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
 		Name:        path,
 		Description: fmt.Sprintf("CSV file at %s", path),
 		List: &plugin.ListConfig{
-			Hydrate: listCSVWithPath(path),
+			Hydrate: listCSVWithPath(path, connection),
 		},
 		Columns: cols,
 	}, nil
 }
 
-func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCSVWithPath(path string, connection *plugin.Connection) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 
 		csvFile, err := os.Open(path)
@@ -75,7 +75,7 @@ func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData,
 
 		r := csv.NewReader(csvFile)
 
-		csvConfig := GetConfig(d.Connection)
+		csvConfig := GetConfig(connection)
 		if csvConfig.Separator != nil && *csvConfig.Separator != "" {
 			r.Comma = rune((*csvConfig.Separator)[0])
 		}

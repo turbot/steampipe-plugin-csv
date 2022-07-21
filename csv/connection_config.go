@@ -1,8 +1,9 @@
 package csv
 
 import (
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin/schema"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/schema"
+	"log"
 )
 
 type csvConfig struct {
@@ -30,6 +31,7 @@ func ConfigInstance() interface{} {
 
 // GetConfig :: retrieve and cast connection config from query data
 func GetConfig(connection *plugin.Connection) csvConfig {
+	log.Printf("[WARN] GetConfig for connection %s", connection.Name)
 	if connection == nil || connection.Config == nil {
 		return csvConfig{}
 	}
