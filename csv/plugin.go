@@ -35,19 +35,19 @@ const (
 	keyPath key = "path"
 )
 
-func PluginTables(ctx context.Context, p *plugin.Plugin, connection *plugin.Connection) (map[string]*plugin.Table, error) {
+func PluginTables(ctx context.Context, connection *plugin.Connection) (map[string]*plugin.Table, error) {
 	// Initialize tables
 	tables := map[string]*plugin.Table{}
 
 	// Search for CSV files to create as tables
-	paths, err := csvList(ctx, p, connection)
+	paths, err := csvList(ctx, connection)
 	if err != nil {
 		return nil, err
 	}
 	for _, i := range paths {
 		tableCtx := context.WithValue(ctx, keyPath, i)
 		base := filepath.Base(i)
-		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, p, connection)
+		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, connection)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.PluginTables", "create_table_error", err, "path", i)
 			return nil, err
@@ -57,7 +57,7 @@ func PluginTables(ctx context.Context, p *plugin.Plugin, connection *plugin.Conn
 	return tables, nil
 }
 
-func csvList(ctx context.Context, p *plugin.Plugin, connection *plugin.Connection) ([]string, error) {
+func csvList(ctx context.Context, connection *plugin.Connection) ([]string, error) {
 	// Glob paths in config
 	// Fail if no paths are specified
 	csvConfig := GetConfig(connection)
