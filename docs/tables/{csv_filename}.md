@@ -111,3 +111,29 @@ from
 where
   iage > 25
 ```
+
+### Query multiple CSV files
+
+Given this data:
+
+ips1.csv
+```
+service,ip_addr
+service1,54.176.63.153
+service2,222.236.38.99
+```
+
+ips2.csv
+```
+service,ip_addr
+service3,41.65.221.12
+service4,83.151.87.112
+service5,85.188.10.179
+```
+
+You can query both files like so:
+
+```
+create view all_ips as select * from ips1 union select * from ips2;
+select * from all_ips
+```
