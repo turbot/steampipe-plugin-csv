@@ -13,7 +13,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
-func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
+func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table, error) {
 
 	path := ctx.Value(keyPath).(string)
 	csvFile, err := os.Open(path)
@@ -24,7 +24,7 @@ func tableCSV(ctx context.Context, p *plugin.Plugin) (*plugin.Table, error) {
 
 	r := csv.NewReader(csvFile)
 
-	csvConfig := GetConfig(p.Connection)
+	csvConfig := GetConfig(connection)
 	if csvConfig.Separator != nil && *csvConfig.Separator != "" {
 		r.Comma = rune((*csvConfig.Separator)[0])
 	}
