@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/turbot/go-kit v0.4.0
-	github.com/turbot/steampipe-plugin-sdk/v4 v4.1.6
+	github.com/turbot/steampipe-plugin-sdk/v4 v4.1.7
 )
 
 require (
