@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/bmatcuk/doublestar"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
 func Plugin(ctx context.Context) *plugin.Plugin {
@@ -34,19 +34,19 @@ const (
 	keyPath key = "path"
 )
 
-func PluginTables(ctx context.Context, p *plugin.Plugin) (map[string]*plugin.Table, error) {
+func PluginTables(ctx context.Context, connection *plugin.Connection) (map[string]*plugin.Table, error) {
 	// Initialize tables
 	tables := map[string]*plugin.Table{}
 
 	// Search for CSV files to create as tables
-	paths, err := csvList(ctx, p)
+	paths, err := csvList(ctx, connection)
 	if err != nil {
 		return nil, err
 	}
 	for _, i := range paths {
 		tableCtx := context.WithValue(ctx, keyPath, i)
 		base := filepath.Base(i)
-		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, p)
+		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, connection)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.PluginTables", "create_table_error", err, "path", i)
 			return nil, err
@@ -56,10 +56,10 @@ func PluginTables(ctx context.Context, p *plugin.Plugin) (map[string]*plugin.Tab
 	return tables, nil
 }
 
-func csvList(ctx context.Context, p *plugin.Plugin) ([]string, error) {
+func csvList(ctx context.Context, connection *plugin.Connection) ([]string, error) {
 	// Glob paths in config
 	// Fail if no paths are specified
-	csvConfig := GetConfig(p.Connection)
+	csvConfig := GetConfig(connection)
 	if csvConfig.Paths == nil {
 		return nil, errors.New("paths must be configured")
 	}
