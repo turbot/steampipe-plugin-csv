@@ -1,11 +1,13 @@
 package csv
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/dimchansky/utfbom"
 	"github.com/turbot/go-kit/helpers"
@@ -17,10 +19,22 @@ import (
 func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table, error) {
 
 	path := ctx.Value(keyPath).(string)
-	csvFile, err := os.Open(path)
+	file, err := os.Open(path)
 	if err != nil {
 		plugin.Logger(ctx).Error("csv.tableCSV", "os_open_error", err, "path", path)
 		return nil, err
+	}
+
+	var csvFile io.Reader
+	if strings.HasSuffix(path, gzipExtension) {
+		gzipFile, err := gzip.NewReader(file)
+		if err != nil {
+			plugin.Logger(ctx).Error("csv.tableCSV", "gzip_open_error", err, "path", path)
+			return nil, err
+		}
+		csvFile = gzipFile
+	} else {
+		csvFile = file
 	}
 
 	// Some CSV files have a non-standard Byte Order Mark (BOM) at the start
@@ -75,12 +89,24 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 
-		csvFile, err := os.Open(path)
+		file, err := os.Open(path)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.listCSVWithPath", "os_open_error", err, "path", path)
 			return nil, err
 		}
 
+		var csvFile io.Reader
+		if strings.HasSuffix(path, gzipExtension) {
+			gzipFile, err := gzip.NewReader(file)
+			if err != nil {
+				plugin.Logger(ctx).Error("csv.tableCSV", "gzip_open_error", err, "path", path)
+				return nil, err
+			}
+			csvFile = gzipFile
+		} else {
+			csvFile = file
+		}
+	
 		// Some CSV files have a non-standard Byte Order Mark (BOM) at the start
 		// of the file - for example, UTF-8 encoded CSV files from Excel. This
 		// messes up the first column name, so skip the BOM if found.
