@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/dimchansky/utfbom"
 	"github.com/turbot/go-kit/helpers"
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
@@ -22,7 +23,13 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		return nil, err
 	}
 
-	r := csv.NewReader(csvFile)
+	// Some CSV files have a non-standard Byte Order Mark (BOM) at the start
+	// of the file - for example, UTF-8 encoded CSV files from Excel. This
+	// messes up the first column name, so skip the BOM if found.
+	csvFileWithoutBom, enc := utfbom.Skip(csvFile)
+	plugin.Logger(ctx).Debug("csv.tableCSV", "path", path, "detected_encoding", enc)
+
+	r := csv.NewReader(csvFileWithoutBom)
 
 	csvConfig := GetConfig(connection)
 	if csvConfig.Separator != nil && *csvConfig.Separator != "" {
@@ -70,10 +77,17 @@ func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData,
 
 		csvFile, err := os.Open(path)
 		if err != nil {
+			plugin.Logger(ctx).Error("csv.listCSVWithPath", "os_open_error", err, "path", path)
 			return nil, err
 		}
 
-		r := csv.NewReader(csvFile)
+		// Some CSV files have a non-standard Byte Order Mark (BOM) at the start
+		// of the file - for example, UTF-8 encoded CSV files from Excel. This
+		// messes up the first column name, so skip the BOM if found.
+		csvFileWithoutBom, enc := utfbom.Skip(csvFile)
+		plugin.Logger(ctx).Debug("csv.listCSVWithPath", "path", path, "detected_encoding", enc)
+
+		r := csv.NewReader(csvFileWithoutBom)
 
 		csvConfig := GetConfig(d.Connection)
 		if csvConfig.Separator != nil && *csvConfig.Separator != "" {
