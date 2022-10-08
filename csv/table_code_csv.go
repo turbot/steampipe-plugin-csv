@@ -76,7 +76,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 	for idx, i := range header {
 		// Set the default column name
 		if !isHeader {
-			i = fmt.Sprintf("_c%d", idx)
+			i = fmt.Sprintf("c%d", idx)
 		}
 		colNames = append(colNames, i)
 		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(helpers.EscapePropertyName(i)), Description: fmt.Sprintf("Field %d.", idx)})
