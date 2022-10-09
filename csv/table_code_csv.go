@@ -60,6 +60,9 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		// Set the default column name
 		if setDefaultHeader {
 			i = fmt.Sprintf("c%d", idx)
+		} else if len(i) == 0 {
+			plugin.Logger(ctx).Error("csv.tableCSV", "empty_header_error", "header row has empty value", "path", path, "field", idx)
+			return nil, fmt.Errorf("%s header row has empty value in field %d", path, idx)
 		}
 		colNames = append(colNames, i)
 		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(helpers.EscapePropertyName(i)), Description: fmt.Sprintf("Field %d.", idx)})
