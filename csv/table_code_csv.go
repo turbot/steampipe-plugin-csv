@@ -16,12 +16,12 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
-func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table, error) {
+func readCSV(ctx context.Context, connection *plugin.Connection) (*csv.Reader, error) {
 
 	path := ctx.Value(keyPath).(string)
 	file, err := os.Open(path)
 	if err != nil {
-		plugin.Logger(ctx).Error("csv.tableCSV", "os_open_error", err, "path", path)
+		plugin.Logger(ctx).Error("csv.readCSV", "os_open_error", err, "path", path)
 		return nil, err
 	}
 
@@ -29,7 +29,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 	if strings.HasSuffix(path, gzipExtension) {
 		gzipFile, err := gzip.NewReader(file)
 		if err != nil {
-			plugin.Logger(ctx).Error("csv.tableCSV", "gzip_open_error", err, "path", path)
+			plugin.Logger(ctx).Error("csv.readCSV", "gzip_open_error", err, "path", path)
 			return nil, err
 		}
 		csvFile = gzipFile
@@ -57,6 +57,18 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 			// Set the comment character
 			r.Comment = rune((*csvConfig.Comment)[0])
 		}
+	}
+
+	return r, nil
+}
+
+func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table, error) {
+
+	path := ctx.Value(keyPath).(string)
+	r, err := readCSV(ctx, connection)
+	if err != nil {
+		plugin.Logger(ctx).Error("csv.tableCSV", "read_csv_error", err, "path", path)
+		return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
 	}
 
 	// Read the header to peek at the column names
@@ -89,44 +101,10 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 
-		file, err := os.Open(path)
+		r, err := readCSV(ctx, d.Connection)
 		if err != nil {
-			plugin.Logger(ctx).Error("csv.listCSVWithPath", "os_open_error", err, "path", path)
-			return nil, err
-		}
-
-		var csvFile io.Reader
-		if strings.HasSuffix(path, gzipExtension) {
-			gzipFile, err := gzip.NewReader(file)
-			if err != nil {
-				plugin.Logger(ctx).Error("csv.tableCSV", "gzip_open_error", err, "path", path)
-				return nil, err
-			}
-			csvFile = gzipFile
-		} else {
-			csvFile = file
-		}
-	
-		// Some CSV files have a non-standard Byte Order Mark (BOM) at the start
-		// of the file - for example, UTF-8 encoded CSV files from Excel. This
-		// messes up the first column name, so skip the BOM if found.
-		csvFileWithoutBom, enc := utfbom.Skip(csvFile)
-		plugin.Logger(ctx).Debug("csv.listCSVWithPath", "path", path, "detected_encoding", enc)
-
-		r := csv.NewReader(csvFileWithoutBom)
-
-		csvConfig := GetConfig(d.Connection)
-		if csvConfig.Separator != nil && *csvConfig.Separator != "" {
-			r.Comma = rune((*csvConfig.Separator)[0])
-		}
-		if csvConfig.Comment != nil {
-			if *csvConfig.Comment == "" {
-				// Disable comments
-				r.Comment = 0
-			} else {
-				// Set the comment character
-				r.Comment = rune((*csvConfig.Comment)[0])
-			}
+			plugin.Logger(ctx).Error("csv.listCSVWithPath", "read_csv_error", err, "path", path)
+			return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
 		}
 
 		header, err := r.Read()
