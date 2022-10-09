@@ -52,30 +52,13 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		return nil, fmt.Errorf("failed to parse file header %s: %v", path, err)
 	}
 
-	// Conclude to use the default column names or not
-	isHeader := true
-	keys := make(map[string]bool)
-	for _, i := range header {
-		// Check the empty column name
-		if len(i) == 0 {
-			isHeader = false
-			break
-		}
-		// Check the duplicated column name
-		_, ok := keys[i]
-		if ok {
-			isHeader = false
-			break
-		} else {
-			keys[i] = true
-		}
-	}
+	setDefaultHeader := checkCSVWithHeaderOption(ctx, *csvConfig.Header, header)
 
 	cols := []*plugin.Column{}
 	colNames := []string{}
 	for idx, i := range header {
 		// Set the default column name
-		if !isHeader {
+		if setDefaultHeader {
 			i = fmt.Sprintf("c%d", idx)
 		}
 		colNames = append(colNames, i)
@@ -86,13 +69,13 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		Name:        path,
 		Description: fmt.Sprintf("CSV file at %s", path),
 		List: &plugin.ListConfig{
-			Hydrate: listCSVWithPath(path, isHeader, colNames),
+			Hydrate: listCSVWithPath(path, setDefaultHeader, colNames),
 		},
 		Columns: cols,
 	}, nil
 }
 
-func listCSVWithPath(path string, isHeader bool, colNames []string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCSVWithPath(path string, setDefaultHeader bool, colNames []string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 
 		csvFile, err := os.Open(path)
@@ -124,7 +107,7 @@ func listCSVWithPath(path string, isHeader bool, colNames []string) func(ctx con
 		}
 
 		// Header row consume or not
-		if isHeader {
+		if !setDefaultHeader {
 			header, err := r.Read()
 			if err != nil {
 				plugin.Logger(ctx).Error("csv.listCSVWithPath", "header_parse_error", err, "path", path, "header", header)
@@ -150,4 +133,36 @@ func listCSVWithPath(path string, isHeader bool, colNames []string) func(ctx con
 
 		return nil, nil
 	}
+}
+
+func checkCSVWithHeaderOption(ctx context.Context, headerOption string, header []string) bool {
+
+	// Conclude to use the default column names or not
+	setDefaultHeader := false
+	switch headerOption {
+	case "auto":
+		keys := make(map[string]bool)
+		for _, i := range header {
+			// Check the empty column name
+			if len(i) == 0 {
+				setDefaultHeader = true
+				break
+			}
+			// Check the duplicated column name
+			_, ok := keys[i]
+			if ok {
+				setDefaultHeader = true
+				break
+			} else {
+				keys[i] = true
+			}
+		}
+	case "off":
+		setDefaultHeader = true
+	case "on":
+	default:
+		plugin.Logger(ctx).Warn("csv.headerCSV", "unknown_header_option", "headerOption", headerOption)
+	}
+
+	return setDefaultHeader
 }
