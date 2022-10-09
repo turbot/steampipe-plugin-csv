@@ -39,8 +39,8 @@ func GetConfig(connection *plugin.Connection) csvConfig {
 	}
 	config, _ := connection.Config.(csvConfig)
 	if config.Header == nil {
-		on := "on"
-		config.Header = &on
+		defaultValue := "on"
+		config.Header = &defaultValue
 	}
 	return config
 }
