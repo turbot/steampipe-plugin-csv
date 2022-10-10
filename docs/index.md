@@ -90,7 +90,7 @@ connection "csv" {
   # When it is "off", the default header is added. If the value is set "auto", 
   # it is added only if the empty or duplicated value exist in the header.
   # Defaults to on.
-  # header = "on"
+  header = "on"
 }
 ```
 

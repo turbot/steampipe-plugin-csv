@@ -56,13 +56,24 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 
 	cols := []*plugin.Column{}
 	colNames := []string{}
+	keys := make(map[string]bool)
 	for idx, i := range header {
 		// Set the default column name
 		if setDefaultHeader {
 			i = fmt.Sprintf("c%d", idx)
+		// Table column names cannot be empty strings in default
 		} else if len(i) == 0 {
 			plugin.Logger(ctx).Error("csv.tableCSV", "empty_header_error", "header row has empty value", "path", path, "field", idx)
 			return nil, fmt.Errorf("%s header row has empty value in field %d", path, idx)
+		// Table column names cannot be duplicated in default
+		} else {
+			_, ok := keys[i]
+			if !ok {
+				keys[i] = true
+			} else {
+				plugin.Logger(ctx).Error("csv.tableCSV", "duplicated_header_error", "header row has duplicated value", "path", path, "field", idx)
+				return nil, fmt.Errorf("%s header row has duplicated value in field %d", path, idx)
+			}
 		}
 		colNames = append(colNames, i)
 		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(helpers.EscapePropertyName(i)), Description: fmt.Sprintf("Field %d.", idx)})
