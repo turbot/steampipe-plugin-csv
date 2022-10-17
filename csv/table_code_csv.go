@@ -16,9 +16,8 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
-func readCSV(ctx context.Context, connection *plugin.Connection) (*csv.Reader, error) {
+func readCSV(ctx context.Context, connection *plugin.Connection, path string) (*csv.Reader, error) {
 
-	path := ctx.Value(keyPath).(string)
 	file, err := os.Open(path)
 	if err != nil {
 		plugin.Logger(ctx).Error("csv.readCSV", "os_open_error", err, "path", path)
@@ -65,7 +64,7 @@ func readCSV(ctx context.Context, connection *plugin.Connection) (*csv.Reader, e
 func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table, error) {
 
 	path := ctx.Value(keyPath).(string)
-	r, err := readCSV(ctx, connection)
+	r, err := readCSV(ctx, connection, path)
 	if err != nil {
 		plugin.Logger(ctx).Error("csv.tableCSV", "read_csv_error", err, "path", path)
 		return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
@@ -101,7 +100,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 
-		r, err := readCSV(ctx, d.Connection)
+		r, err := readCSV(ctx, d.Connection, path)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.listCSVWithPath", "read_csv_error", err, "path", path)
 			return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
