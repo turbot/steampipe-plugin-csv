@@ -32,6 +32,7 @@ type key string
 const (
 	// keyPath has been added to avoid key collisions
 	keyPath key = "path"
+	gzipExtension string = ".gz"
 )
 
 func PluginTables(ctx context.Context, connection *plugin.Connection) (map[string]*plugin.Table, error) {
@@ -45,7 +46,7 @@ func PluginTables(ctx context.Context, connection *plugin.Connection) (map[strin
 	}
 	for _, i := range paths {
 		tableCtx := context.WithValue(ctx, keyPath, i)
-		base := filepath.Base(i)
+		base := strings.TrimSuffix(filepath.Base(i), gzipExtension)
 		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, connection)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.PluginTables", "create_table_error", err, "path", i)
