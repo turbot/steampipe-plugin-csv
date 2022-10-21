@@ -1,3 +1,9 @@
+## v0.4.1 [2022-10-19]
+
+_Bug fixes_
+
+- Fixed the plugin to skip the non-standard Byte Order Mark (BOM) at the start of some CSV files (for instance, UTF-8 encoded CSV files from Excel) which would make the first column of such CSV files not queryable.
+
 ## v0.4.0 [2022-09-28]
 
 _Dependencies_

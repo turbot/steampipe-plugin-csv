@@ -7,6 +7,7 @@ connection "csv" {
 
   # For example:
   #  - "*.csv" matches all CSV files in the CWD
+  #  - "*.csv.gz" matches all gzipped CSV files in the CWD
   #  - "**/*.csv" matches all CSV files in the CWD and all sub-directories
   #  - "../*.csv" matches all CSV files in the CWD's parent directory
   #  - "steampipe*.csv" matches all CSV files starting with "steampipe" in the CWD
@@ -17,7 +18,7 @@ connection "csv" {
   # the CWD will be matched, which may cause errors if incompatible file types exist
 
   # Defaults to CWD
-  paths = [ "*.csv" ]
+  paths = [ "*.csv", "*.csv.gz" ]
 
   # The field delimiter character when parsing CSV files. Must be a single
   # character. Defaults to comma.
