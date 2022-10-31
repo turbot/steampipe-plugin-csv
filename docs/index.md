@@ -86,12 +86,18 @@ connection "csv" {
   # If set, then lines beginning with the comment character without preceding
   # whitespace are ignored. Disabled by default.
   # comment = "#"
+
+  # When it is "off", the default header is added. If the value is set "auto", 
+  # it is added only if the empty or duplicated value exist in the header.
+  # Defaults to on.
+  header = "on"
 }
 ```
 
 - `paths` - A list of directory paths to search for CSV files. Paths are resolved relative to the current working directory. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also supports `**` for recursive matching. Defaults to the current working directory.
 - `separator` - Field delimiter when parsing files. Defaults to `,`.
 - `comment` - Lines starting with this comment character are ignored. Disabled by default.
+- `header` - Header existance of a CSV file. The default header can be added by set it `off` or `auto`. Defaults to `on`.
 
 ## Get involved
 

@@ -9,6 +9,7 @@ type csvConfig struct {
 	Paths     []string `cty:"paths"`
 	Separator *string  `cty:"separator"`
 	Comment   *string  `cty:"comment"`
+	Header    *string  `cty:"header"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
@@ -20,6 +21,9 @@ var ConfigSchema = map[string]*schema.Attribute{
 		Type: schema.TypeString,
 	},
 	"comment": {
+		Type: schema.TypeString,
+	},
+	"header": {
 		Type: schema.TypeString,
 	},
 }
@@ -34,5 +38,9 @@ func GetConfig(connection *plugin.Connection) csvConfig {
 		return csvConfig{}
 	}
 	config, _ := connection.Config.(csvConfig)
+	if config.Header == nil {
+		defaultValue := "on"
+		config.Header = &defaultValue
+	}
 	return config
 }

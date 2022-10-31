@@ -77,13 +77,31 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		return nil, fmt.Errorf("failed to parse file header %s: %v", path, err)
 	}
 
+	csvConfig := GetConfig(connection)
+	setDefaultHeader := checkCSVWithHeaderOption(ctx, *csvConfig.Header, header)
+
 	cols := []*plugin.Column{}
+	colNames := []string{}
+	keys := make(map[string]bool)
 	for idx, i := range header {
-		// Table column names cannot be empty strings
-		if len(i) == 0 {
+		// Set the default column name
+		if setDefaultHeader {
+			i = fmt.Sprintf("c%d", idx)
+		// Table column names cannot be empty strings in default
+		} else if len(i) == 0 {
 			plugin.Logger(ctx).Error("csv.tableCSV", "empty_header_error", "header row has empty value", "path", path, "field", idx)
 			return nil, fmt.Errorf("%s header row has empty value in field %d", path, idx)
+		// Table column names cannot be duplicated in default
+		} else {
+			_, ok := keys[i]
+			if !ok {
+				keys[i] = true
+			} else {
+				plugin.Logger(ctx).Error("csv.tableCSV", "duplicated_header_error", "header row has duplicated value", "path", path, "field", idx)
+				return nil, fmt.Errorf("%s header row has duplicated value in field %d", path, idx)
+			}
 		}
+		colNames = append(colNames, i)
 		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(helpers.EscapePropertyName(i)), Description: fmt.Sprintf("Field %d.", idx)})
 	}
 
@@ -91,13 +109,13 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		Name:        path,
 		Description: fmt.Sprintf("CSV file at %s", path),
 		List: &plugin.ListConfig{
-			Hydrate: listCSVWithPath(path),
+			Hydrate: listCSVWithPath(path, setDefaultHeader, colNames),
 		},
 		Columns: cols,
 	}, nil
 }
 
-func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCSVWithPath(path string, setDefaultHeader bool, colNames []string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 
 		r, err := readCSV(ctx, d.Connection, path)
@@ -106,10 +124,13 @@ func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData,
 			return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
 		}
 
-		header, err := r.Read()
-		if err != nil {
-			plugin.Logger(ctx).Error("csv.listCSVWithPath", "header_parse_error", err, "path", path, "header", header)
-			return nil, err
+		// Header row consume or not
+		if !setDefaultHeader {
+			header, err := r.Read()
+			if err != nil {
+				plugin.Logger(ctx).Error("csv.listCSVWithPath", "header_parse_error", err, "path", path, "header", header)
+				return nil, err
+			}
 		}
 
 		for {
@@ -123,11 +144,43 @@ func listCSVWithPath(path string) func(ctx context.Context, d *plugin.QueryData,
 			}
 			row := map[string]string{}
 			for idx, j := range record {
-				row[header[idx]] = j
+				row[colNames[idx]] = j
 			}
 			d.StreamListItem(ctx, row)
 		}
 
 		return nil, nil
 	}
+}
+
+func checkCSVWithHeaderOption(ctx context.Context, headerOption string, header []string) bool {
+
+	// Conclude to use the default column names or not
+	setDefaultHeader := false
+	switch headerOption {
+	case "auto":
+		keys := make(map[string]bool)
+		for _, i := range header {
+			// Check the empty column name
+			if len(i) == 0 {
+				setDefaultHeader = true
+				break
+			}
+			// Check the duplicated column name
+			_, ok := keys[i]
+			if ok {
+				setDefaultHeader = true
+				break
+			} else {
+				keys[i] = true
+			}
+		}
+	case "off":
+		setDefaultHeader = true
+	case "on":
+	default:
+		plugin.Logger(ctx).Warn("csv.headerCSV", "unknown_header_option", "headerOption", headerOption)
+	}
+
+	return setDefaultHeader
 }
