@@ -31,7 +31,7 @@ type key string
 
 const (
 	// keyPath has been added to avoid key collisions
-	keyPath key = "path"
+	keyPath       key    = "path"
 	gzipExtension string = ".gz"
 )
 
@@ -109,7 +109,7 @@ func csvList(ctx context.Context, connection *plugin.Connection) ([]string, erro
 		// Check if file or directory
 		fileInfo, err := os.Stat(i)
 		if err != nil {
-			plugin.Logger(ctx).Error("utils.tfConfigList", "error getting file info", err, "path", i)
+			plugin.Logger(ctx).Error("csv.csvList", "error getting file info", err, "path", i)
 			return nil, err
 		}
 
