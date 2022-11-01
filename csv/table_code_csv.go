@@ -78,44 +78,64 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 	}
 
 	csvConfig := GetConfig(connection)
-	setDefaultHeader := checkCSVWithHeaderOption(ctx, *csvConfig.Header, header)
+	headerMode := "auto"
+
+	if csvConfig.Header != nil {
+		headerMode = *csvConfig.Header
+	}
 
 	cols := []*plugin.Column{}
 	colNames := []string{}
-	keys := make(map[string]bool)
-	for idx, i := range header {
-		// Set the default column name
-		if setDefaultHeader {
-			i = fmt.Sprintf("c%d", idx)
-		// Table column names cannot be empty strings in default
-		} else if len(i) == 0 {
-			plugin.Logger(ctx).Error("csv.tableCSV", "empty_header_error", "header row has empty value", "path", path, "field", idx)
-			return nil, fmt.Errorf("%s header row has empty value in field %d", path, idx)
-		// Table column names cannot be duplicated in default
-		} else {
-			_, ok := keys[i]
-			if !ok {
-				keys[i] = true
-			} else {
-				plugin.Logger(ctx).Error("csv.tableCSV", "duplicated_header_error", "header row has duplicated value", "path", path, "field", idx)
-				return nil, fmt.Errorf("%s header row has duplicated value in field %d", path, idx)
-			}
+	var headerValue string
+
+	// TODO: Can I loop just once, collecting column names or rows as I iterate through?
+
+	// If header mode is "off", no need to check if header is valid since it's not used
+	var isValidHeader bool
+	var invalidReason string
+	if headerMode == "auto" || headerMode == "on" {
+		isValidHeader, invalidReason = validHeader(ctx, header)
+	}
+
+	useHeaderRow := true
+
+	// Check if we should use header row
+	switch headerMode {
+	case "auto":
+		if !isValidHeader {
+			useHeaderRow = false
 		}
-		colNames = append(colNames, i)
-		cols = append(cols, &plugin.Column{Name: i, Type: proto.ColumnType_STRING, Transform: transform.FromField(helpers.EscapePropertyName(i)), Description: fmt.Sprintf("Field %d.", idx)})
+	case "off":
+		useHeaderRow = false
+	case "on":
+		if !isValidHeader {
+			plugin.Logger(ctx).Error("csv.tableCSV", "invalid_header_error", invalidReason, "path", path)
+			return nil, fmt.Errorf(invalidReason)
+		}
+	}
+
+	for idx, i := range header {
+		if useHeaderRow {
+			headerValue = i
+		} else {
+			headerValue = fmt.Sprintf("c%d", idx)
+		}
+
+		colNames = append(colNames, headerValue)
+		cols = append(cols, &plugin.Column{Name: headerValue, Type: proto.ColumnType_STRING, Transform: transform.FromField(helpers.EscapePropertyName(headerValue)), Description: fmt.Sprintf("Field %d.", idx)})
 	}
 
 	return &plugin.Table{
 		Name:        path,
 		Description: fmt.Sprintf("CSV file at %s", path),
 		List: &plugin.ListConfig{
-			Hydrate: listCSVWithPath(path, setDefaultHeader, colNames),
+			Hydrate: listCSVWithPath(path, useHeaderRow, colNames),
 		},
 		Columns: cols,
 	}, nil
 }
 
-func listCSVWithPath(path string, setDefaultHeader bool, colNames []string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCSVWithPath(path string, useHeaderRow bool, colNames []string) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 
 		r, err := readCSV(ctx, d.Connection, path)
@@ -124,8 +144,8 @@ func listCSVWithPath(path string, setDefaultHeader bool, colNames []string) func
 			return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
 		}
 
-		// Header row consume or not
-		if !setDefaultHeader {
+		// Header rows should not be used as a data row
+		if useHeaderRow {
 			header, err := r.Read()
 			if err != nil {
 				plugin.Logger(ctx).Error("csv.listCSVWithPath", "header_parse_error", err, "path", path, "header", header)
@@ -153,34 +173,22 @@ func listCSVWithPath(path string, setDefaultHeader bool, colNames []string) func
 	}
 }
 
-func checkCSVWithHeaderOption(ctx context.Context, headerOption string, header []string) bool {
-
-	// Conclude to use the default column names or not
-	setDefaultHeader := false
-	switch headerOption {
-	case "auto":
-		keys := make(map[string]bool)
-		for _, i := range header {
-			// Check the empty column name
-			if len(i) == 0 {
-				setDefaultHeader = true
-				break
-			}
-			// Check the duplicated column name
-			_, ok := keys[i]
-			if ok {
-				setDefaultHeader = true
-				break
-			} else {
-				keys[i] = true
-			}
+// A valid header row has no empty values or duplicate values
+func validHeader(ctx context.Context, header []string) (bool, string) {
+	keys := make(map[string]bool)
+	for idx, i := range header {
+		// Check for empty column names
+		if len(i) == 0 {
+			return false, fmt.Sprintf("header row has empty value in field %d", idx)
 		}
-	case "off":
-		setDefaultHeader = true
-	case "on":
-	default:
-		plugin.Logger(ctx).Warn("csv.headerCSV", "unknown_header_option", "headerOption", headerOption)
+		// Check for duplicate column names
+		_, ok := keys[i]
+		if ok {
+			return false, fmt.Sprintf("header row has duplicate value in field %d", idx)
+		}
+		keys[i] = true
 	}
 
-	return setDefaultHeader
+	// No empty or duplicate column names found
+	return true, ""
 }

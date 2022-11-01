@@ -67,6 +67,7 @@ connection "csv" {
 
   # For example:
   #  - "*.csv" matches all CSV files in the CWD
+  #  - "*.csv.gz" matches all gzipped CSV files in the CWD
   #  - "**/*.csv" matches all CSV files in the CWD and all sub-directories
   #  - "../*.csv" matches all CSV files in the CWD's parent directory
   #  - "steampipe*.csv" matches all CSV files starting with "steampipe" in the CWD
@@ -77,7 +78,7 @@ connection "csv" {
   # the CWD will be matched, which may cause errors if incompatible file types exist
 
   # Defaults to CWD
-  paths = [ "*.csv" ]
+  paths = [ "*.csv", "*.csv.gz" ]
 
   # The field delimiter character when parsing CSV files. Must be a single
   # character. Defaults to comma.
@@ -87,17 +88,20 @@ connection "csv" {
   # whitespace are ignored. Disabled by default.
   # comment = "#"
 
-  # When it is "off", the default header is added. If the value is set "auto", 
-  # it is added only if the empty or duplicated value exist in the header.
-  # Defaults to on.
-  header = "on"
+  # Whether to use the first row as the header row when creating column names.
+  # Valid values are "auto", "on", "off":
+  #   - "auto": If there are no empty or duplicate values use the first row as the header; else, use generic column names, e.g., "c1", "c2".
+  #   - "on": Use the first row as the header. If there are empty or duplicate values, the tables will fail to load.
+  #   - "off": Do not use the first row as the header. All column names will be generic.
+  # Defaults to "auto".
+  # header = "auto"
 }
 ```
 
 - `paths` - A list of directory paths to search for CSV files. Paths are resolved relative to the current working directory. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also supports `**` for recursive matching. Defaults to the current working directory.
 - `separator` - Field delimiter when parsing files. Defaults to `,`.
 - `comment` - Lines starting with this comment character are ignored. Disabled by default.
-- `header` - Header existance of a CSV file. The default header can be added by set it `off` or `auto`. Defaults to `on`.
+- `header` - Whether to use the first row as the header row when creating column names. Valid values are "auto", "on", "off". Defaults to "auto".
 
 ## Get involved
 

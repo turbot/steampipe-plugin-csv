@@ -28,8 +28,11 @@ connection "csv" {
   # whitespace are ignored. Disabled by default.
   # comment = "#"
 
-  # When it is "off", the default header is added. If the value is set "auto", 
-  # it is added only if the empty or duplicated value exist in the header.
-  # Defaults to on.
-  header = "on"
+  # Whether to use the first row as the header row when creating column names.
+  # Valid values are "auto", "on", "off":
+  #   - "auto": If there are no empty or duplicate values use the first row as the header. Else, use generic column names, e.g., "c1", "c2".
+  #   - "on": Use the first row as the header. If there are empty or duplicate values, the tables will fail to load.
+  #   - "off": Do not use the first row as the header. All column names will be generic.
+  # Defaults to "auto".
+  # header = "auto"
 }
