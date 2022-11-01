@@ -44,14 +44,22 @@ func PluginTables(ctx context.Context, connection *plugin.Connection) (map[strin
 	if err != nil {
 		return nil, err
 	}
+
+	var errors []error
 	for _, i := range paths {
 		tableCtx := context.WithValue(ctx, keyPath, i)
 		base := strings.TrimSuffix(filepath.Base(i), gzipExtension)
-		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, connection)
+		table, err := tableCSV(tableCtx, connection)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.PluginTables", "create_table_error", err, "path", i)
-			return nil, err
+			errors = append(errors, err)
+		} else {
+			tables[base[0:len(base)-len(filepath.Ext(base))]] = table
 		}
+	}
+
+	if len(errors) > 0 {
+		return nil, errors[0]
 	}
 
 	return tables, nil
