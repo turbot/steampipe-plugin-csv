@@ -67,7 +67,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 	r, err := readCSV(ctx, connection, path)
 	if err != nil {
 		plugin.Logger(ctx).Error("csv.tableCSV", "read_csv_error", err, "path", path)
-		return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
+		return nil, fmt.Errorf("failed to load CSV file %s: %v", path, err)
 	}
 
 	// Read the header to peek at the column names
@@ -77,6 +77,10 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		return nil, fmt.Errorf("failed to parse file header %s: %v", path, err)
 	}
 
+	// Determine whether to use the first row as the header row when creating column names:
+	// - "auto": If there are no empty or duplicate values use the first row as the header. Else, use generic column names, e.g., "c1", "c2".
+	// - "on": Use the first row as the header. If there are empty or duplicate values, the tables will fail to load.
+	// - "off": Do not use the first row as the header. All column names will be generic.
 	csvConfig := GetConfig(connection)
 	headerMode := "auto"
 
@@ -88,9 +92,11 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 	colNames := []string{}
 	var headerValue string
 
-	// TODO: Can I loop just once, collecting column names or rows as I iterate through?
+	// TODO: Can we read the header just once, collecting column names and rows
+	// along the way?
 
-	// If header mode is "off", no need to check if header is valid since it's not used
+	// If header mode is "off", no need to check if header is valid since it's
+	// not used
 	var isValidHeader bool
 	var invalidReason string
 	if headerMode == "auto" || headerMode == "on" {
@@ -141,7 +147,7 @@ func listCSVWithPath(path string, useHeaderRow bool, colNames []string) func(ctx
 		r, err := readCSV(ctx, d.Connection, path)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.listCSVWithPath", "read_csv_error", err, "path", path)
-			return nil, fmt.Errorf("failed to load csv file %s: %v", path, err)
+			return nil, fmt.Errorf("failed to load CSV file %s: %v", path, err)
 		}
 
 		// Header rows should not be used as a data row
