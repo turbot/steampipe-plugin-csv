@@ -3,10 +3,23 @@
 Query data from CSV files. A table is automatically created to represent each
 CSV file found in the configured `paths`.
 
+**Note**: All examples in this document assume the `header` configuration argument is set to `auto` (default value). For more information on how column names are created, please see [Header row](https://hub.steampipe.io/plugins/turbot/csv#header-row).
+
 For instance, if `paths` is set to `/Users/myuser/csv/*`, and that directory contains:
 
-- products.csv
-- users.csv
+- products.csv:
+  ```csv
+  product_name,sku
+  Paper,P001
+  Better Paper,P002
+  ```
+- users.csv:
+  ```csv
+  first_name,last_name,email
+  Michael,Scott,mscott@dmi.com
+  Dwight,Schrute,dschrute@dmi.com
+  Pamela,Beesly,pbeesly@dmi.com
+  ```
 
 This plugin will create 2 tables:
 
@@ -22,8 +35,7 @@ from
   users;
 ```
 
-Each of these tables will have the same column structure as the CSV they were
-created from and all column values are returned as text data type.
+All column values are returned as text data type.
 
 ## Examples
 
@@ -31,7 +43,7 @@ created from and all column values are returned as text data type.
 
 Assuming your connection is called `csv` (the default), list all tables with:
 
-```sql
+```bash
 .inspect csv
 +----------+--------------------------------------------+
 | table    | description                                |
@@ -43,7 +55,7 @@ Assuming your connection is called `csv` (the default), list all tables with:
 
 To get defails for a specific table, inspect it by name:
 
-```sql
+```bash
 .inspect csv.users
 +------------+------+-------------+
 | column     | type | description |
@@ -116,15 +128,17 @@ where
 
 Given this data:
 
-ips1.csv
-```
+ips1.csv:
+
+```csv
 service,ip_addr
 service1,54.176.63.153
 service2,222.236.38.99
 ```
 
-ips2.csv
-```
+ips2.csv:
+
+```csv
 service,ip_addr
 service3,41.65.221.12
 service4,83.151.87.112
@@ -133,7 +147,7 @@ service5,85.188.10.179
 
 You can query both files like so:
 
-```
+```sql
 create view all_ips as select * from ips1 union select * from ips2;
 select * from all_ips
 ```
