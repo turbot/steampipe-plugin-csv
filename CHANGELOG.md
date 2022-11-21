@@ -1,3 +1,14 @@
+## v0.5.0 [2022-11-21]
+
+_What's new?_
+
+- Added support to read gzipped CSV files. ([#42](https://github.com/turbot/steampipe-plugin-csv/pull/41)) (Thanks to [@daeho-ro](https://github.com/daeho-ro) for the new feature!)
+- Added `header` config argument, which allows you to set if the first row should be used a header row when determining each table's column names. By default, `header` is set to `auto`, so if the first row is a valid header row, i.e., no missing or duplicate values, its values will be used for column names; else, generic column names, e.g., "a", "b", will be used. For more information, please see [Column Names](https://hub.steampipe.io/plugins/turbot/csv/tables/{csv_filename}#column-names). (Thanks to [@daeho-ro](https://github.com/daeho-ro) for another new feature!)
+
+_Enhancements_
+
+- Recompiled plugin with [steampipe-plugin-sdk v4.1.8](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v418-2022-09-08) which increases the default open file limit. ([#46](https://github.com/turbot/steampipe-plugin-csv/pull/46))
+
 ## v0.4.1 [2022-10-19]
 
 _Bug fixes_
