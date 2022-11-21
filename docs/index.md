@@ -90,7 +90,7 @@ connection "csv" {
 
   # Determine whether to use the first row as the header row when creating column names.
   # Valid values are "auto", "on", "off":
-  #   - "auto": If there are no empty or duplicate values use the first row as the header; else, use the first row as a data row and use generic column names, e.g., "c1", "c2".
+  #   - "auto": If there are no empty or duplicate values use the first row as the header; else, use the first row as a data row and use generic column names, e.g., "a", "b".
   #   - "on": Use the first row as the header. If there are empty or duplicate values, the tables will fail to load.
   #   - "off": Do not use the first row as the header. All column names will be generic.
   # Defaults to "auto".
@@ -158,9 +158,9 @@ The CSV plugin will assume the first row is not the header row and will create a
 +--------+------+-------------+
 | column | type | description |
 +--------+------+-------------+
-| c0     | text | Field 0.    |
-| c1     | text | Field 1.    |
-| c2     | text | Field 2.    |
+| a      | text | Field 0.    |
+| b      | text | Field 1.    |
+| c      | text | Field 2.    |
 +--------+------+-------------+
 ```
 
@@ -169,7 +169,7 @@ Which produces the following query results:
 ```bash
 > select * from dmi
 +------------+---------+------------------+
-| c0         | c1      | c2               |
+| a          | b       | c                |
 +------------+---------+------------------+
 | first_name |         | email            |
 | Pamela     | Beesly  | pbeesly@dmi.com  |

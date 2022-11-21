@@ -5,7 +5,7 @@ CSV file found in the configured `paths`.
 
 **Note**: All examples in this document assume the `header` configuration argument is set to `auto` (default value). For more information on how column names are created, please see [Header row](https://hub.steampipe.io/plugins/turbot/csv#header-row).
 
-For instance, if `paths` is set to `/Users/myuser/csv/*`, and that directory contains:
+For instance, if `paths` is set to `/Users/myuser/csv/*.csv`, and that directory contains:
 
 - products.csv:
   ```csv

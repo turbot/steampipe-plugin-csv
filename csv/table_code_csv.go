@@ -124,7 +124,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		if useHeaderRow {
 			headerValue = i
 		} else {
-			headerValue = fmt.Sprintf("c%d", idx)
+			headerValue = intToLetters(idx + 1)
 		}
 
 		colNames = append(colNames, headerValue)
