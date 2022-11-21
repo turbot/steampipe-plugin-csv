@@ -78,7 +78,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 	}
 
 	// Determine whether to use the first row as the header row when creating column names:
-	// - "auto": If there are no empty or duplicate values use the first row as the header. Else, use generic column names, e.g., "c1", "c2".
+	// - "auto": If there are no empty or duplicate values use the first row as the header. Else, use generic column names, e.g., "a", "b".
 	// - "on": Use the first row as the header. If there are empty or duplicate values, the tables will fail to load.
 	// - "off": Do not use the first row as the header. All column names will be generic.
 	csvConfig := GetConfig(connection)
@@ -124,7 +124,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 		if useHeaderRow {
 			headerValue = i
 		} else {
-			headerValue = fmt.Sprintf("c%d", idx)
+			headerValue = intToLetters(idx + 1)
 		}
 
 		colNames = append(colNames, headerValue)
