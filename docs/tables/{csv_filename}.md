@@ -3,8 +3,6 @@
 Query data from CSV files. A table is automatically created to represent each
 CSV file found in the configured `paths`.
 
-**Note**: All examples in this document assume the `header` configuration argument is set to `auto` (default value). For more information on how column names are created, please see [Header row](https://hub.steampipe.io/plugins/turbot/csv#header-row).
-
 For instance, if `paths` is set to `/Users/myuser/csv/*.csv`, and that directory contains:
 
 - products.csv:
@@ -38,6 +36,8 @@ from
 All column values are returned as text data type.
 
 ## Examples
+
+**Note**: All examples in this section assume the `header` configuration argument is set to `auto` (default value). For more information on how column names are created, please see [Column Names](https://hub.steampipe.io/plugins/turbot/csv/tables/{csv_filename}#column-names).
 
 ### Inspect the table structure
 
@@ -151,3 +151,82 @@ You can query both files like so:
 create view all_ips as select * from ips1 union select * from ips2;
 select * from all_ips
 ```
+
+## Column Names
+
+By default, the `header` configuration argument is set to `auto`, so when CSV files are loaded, the first row will be checked if it's a valid header row, i.e., no missing or duplicate values.
+
+For instance, for the following CSV file `users.csv`:
+
+```csv
+first_name,last_name,email
+Michael,Scott,mscott@dmi.com
+Dwight,Schrute,dschrute@dmi.com
+Pamela,Beesly,pbeesly@dmi.com
+```
+
+The CSV plugin will create a table called `users` with the header values as column names:
+
+```bash
+.inspect csv.users
++------------+------+-------------+
+| column     | type | description |
++------------+------+-------------+
+| first_name | text | Field 0.    |
+| last_name  | text | Field 1.    |
+| email      | text | Field 2.    |
++------------+------+-------------+
+```
+
+Which produces the following query results:
+
+```bash
+> select * from dmi
++------------+-----------+------------------+
+| first_name | last_name | email            |
++------------+-----------+------------------+
+| Dwight     | Schrute   | dschrute@dmi.com |
+| Michael    | Scott     | mscott@dmi.com   |
+| Pamela     | Beesly    | pbeesly@dmi.com  |
++------------+-----------+------------------+
+```
+
+However, if the first row in `users.csv` was missing a value:
+
+```csv
+first_name,,email
+Michael,Scott,mscott@dmi.com
+Dwight,Schrute,dschrute@dmi.com
+Pamela,Beesly,pbeesly@dmi.com
+```
+
+The CSV plugin will assume the first row is not the header row and will create a table called `users` with positional column names:
+
+```bash
+.inspect csv.users
++--------+------+-------------+
+| column | type | description |
++--------+------+-------------+
+| a      | text | Field 0.    |
+| b      | text | Field 1.    |
+| c      | text | Field 2.    |
++--------+------+-------------+
+```
+
+Which produces the following query results:
+
+```bash
+> select * from dmi
++------------+---------+------------------+
+| a          | b       | c                |
++------------+---------+------------------+
+| first_name |         | email            |
+| Pamela     | Beesly  | pbeesly@dmi.com  |
+| Dwight     | Schrute | dschrute@dmi.com |
+| Michael    | Scott   | mscott@dmi.com   |
++------------+---------+------------------+
+```
+
+The `header` configuration argument can also be set to:
+- `on`: This setting requires the first row to be a valid header row, else the plugin will fail to create the tables.
+- `off`: This setting always assumes the first row isn't the header row and uses positional column names for all tables.
