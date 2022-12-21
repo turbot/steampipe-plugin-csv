@@ -103,7 +103,7 @@ func csvList(ctx context.Context, connection *plugin.Connection) ([]string, erro
 		matches = append(matches, iMatches...)
 	}
 
-	// Sanitize the matches to likely csvfiles
+	// Sanitize the matches to ignore the directories
 	var csvFilePaths []string
 	for _, i := range matches {
 		// Check if file or directory
@@ -118,19 +118,6 @@ func csvList(ctx context.Context, connection *plugin.Connection) ([]string, erro
 			continue
 		}
 
-		// If the file path is an exact match to a matrix path then it's always
-		// treated as a match - it was requested exactly
-		hit := false
-		for _, j := range paths {
-			if i == j {
-				hit = true
-				break
-			}
-		}
-		if hit {
-			csvFilePaths = append(csvFilePaths, i)
-			continue
-		}
 		csvFilePaths = append(csvFilePaths, i)
 	}
 
