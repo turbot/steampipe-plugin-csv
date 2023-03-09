@@ -1,3 +1,13 @@
+## v0.6.0 [2023-03-09]
+
+_What's new?_
+
+- Added file watching support for files included in the `paths` config argument. ([#53](https://github.com/turbot/steampipe-plugin-csv/pull/53))
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v5.2.0](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v520-2023-03-02) which includes fixes for query cache pending item mechanism and aggregator connections not working for dynamic tables.([#53](https://github.com/turbot/steampipe-plugin-csv/pull/53))
+
 ## v0.5.0 [2022-11-21]
 
 _What's new?_
