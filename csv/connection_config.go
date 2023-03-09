@@ -1,12 +1,12 @@
 package csv
 
 import (
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/schema"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/schema"
 )
 
 type csvConfig struct {
-	Paths     []string `cty:"paths"`
+	Paths     []string `cty:"paths" steampipe:"watch"`
 	Separator *string  `cty:"separator"`
 	Comment   *string  `cty:"comment"`
 	Header    *string  `cty:"header"`
