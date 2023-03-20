@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/turbot/go-kit v0.5.0
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.3.0-rc.0
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.3.0
 )
 
 require (
