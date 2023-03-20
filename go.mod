@@ -3,10 +3,9 @@ module github.com/turbot/steampipe-plugin-csv
 go 1.19
 
 require (
-	github.com/bmatcuk/doublestar v1.3.4
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/turbot/go-kit v0.5.0
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.2.0
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.3.0
 )
 
 require (

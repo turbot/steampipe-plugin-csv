@@ -2,6 +2,8 @@ connection "csv" {
   plugin = "csv"
 
   # Paths is a list of locations to search for CSV files
+  # Paths can be configured with a local directory, a remote Git repository URL, or an S3 bucket URL
+  # Refer https://hub.steampipe.io/plugins/turbot/csv#supported-path-formats for more information
   # All paths are resolved relative to the current working directory (CWD)
   # Wildcard based searches are supported, including recursive searches
 
