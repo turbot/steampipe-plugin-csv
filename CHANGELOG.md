@@ -1,3 +1,29 @@
+## v0.8.0 [2023-05-11]
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v5.4.1](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v541-2023-05-05) which fixes increased plugin initialization time due to multiple connections causing the schema to be loaded repeatedly. ([#58](https://github.com/turbot/steampipe-plugin-csv/pull/58))
+
+## v0.7.0 [2023-03-20]
+
+_What's new?_
+
+- Added support for CSV files from remote Git repositories and S3 buckets. For more information, please see [Supported Path Formats](https://hub.steampipe.io/plugins/turbot/csv#supported-path-formats). ([#55](https://github.com/turbot/steampipe-plugin-csv/pull/55))
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v5.3.0](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v530-2023-03-16) which includes support for fetching remote files with go-getter for dynamic plugins. ([#55](https://github.com/turbot/steampipe-plugin-csv/pull/55))
+
+## v0.6.0 [2023-03-09]
+
+_What's new?_
+
+- Added file watching support for files included in the `paths` config argument. ([#53](https://github.com/turbot/steampipe-plugin-csv/pull/53))
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v5.2.0](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v520-2023-03-02) which includes fixes for query cache pending item mechanism and aggregator connections not working for dynamic tables.([#53](https://github.com/turbot/steampipe-plugin-csv/pull/53))
+
 ## v0.5.0 [2022-11-21]
 
 _What's new?_

@@ -6,7 +6,7 @@ import (
 )
 
 type csvConfig struct {
-	Paths     []string `cty:"paths"`
+	Paths     []string `cty:"paths" steampipe:"watch"`
 	Separator *string  `cty:"separator"`
 	Comment   *string  `cty:"comment"`
 	Header    *string  `cty:"header"`

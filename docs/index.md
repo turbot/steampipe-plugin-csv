@@ -62,6 +62,8 @@ connection "csv" {
   plugin = "csv"
 
   # Paths is a list of locations to search for CSV files
+  # Paths can be configured with a local directory, a remote Git repository URL, or an S3 bucket URL
+  # Refer https://hub.steampipe.io/plugins/turbot/csv#supported-path-formats for more information
   # All paths are resolved relative to the current working directory (CWD)
   # Wildcard based searches are supported, including recursive searches
 
@@ -102,6 +104,111 @@ connection "csv" {
 - `separator` - Field delimiter when parsing files. Defaults to `,`.
 - `comment` - Lines starting with this comment character are ignored. Disabled by default.
 - `header` - Whether to use the first row as the header row when creating column names. Valid values are "auto", "on", "off". Defaults to "auto". For more information, please see [Column Names](https://hub.steampipe.io/plugins/turbot/csv/tables/{csv_filename}#column-names).
+
+### Supported Path Formats
+
+The `paths` config argument is flexible and can search for CSV files from several sources, e.g., local directory paths, Git, S3.
+
+The following sources are supported:
+
+- [Local files](#configuring-local-file-paths)
+- [Remote Git repositories](#configuring-remote-git-repository-urls)
+- [S3](#configuring-s3-urls)
+
+Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and support `**` for recursive matching. For example:
+
+```hcl
+connection "csv" {
+  plugin = "csv"
+
+  paths = [
+    "*.csv",
+    "**/*.csv",
+    "github.com/codeforamerica/ohana-api//data/sample-csv//*.csv",
+    "bitbucket.org/ved_misra/sample-csv//*.csv",
+    "gitlab.com/subhajit7/example-files//sample-csv-files//*.csv",
+    "s3::https://bucket.s3.us-east-1.amazonaws.com/test_folder//*.csv"
+  ]
+}
+```
+
+**Note**: If any path matches on `*` without `.csv`, all files (including non-CSV files) in the directory will be matched, which may cause errors if incompatible file types exist.
+
+#### Configuring Local File Paths
+
+You can define a list of local directory paths to search for CSV files. Paths are resolved relative to the current working directory. For example:
+
+- "*.csv" matches all CSV files in the CWD
+- "*.csv.gz" matches all gzipped CSV files in the CWD
+- "**/*.csv" matches all CSV files in the CWD and all sub-directories
+- "../*.csv" matches all CSV files in the CWD's parent directory
+- "steampipe*.csv" matches all CSV files starting with "steampipe" in the CWD
+- "/path/to/dir/*.csv" matches all CSV files in a specific directory
+- "/path/to/dir/custom.csv" matches a specific file
+
+```hcl
+connection "csv" {
+  plugin = "csv"
+
+  paths = [ "*.csv", "~/*.csv", "/path/to/dir/custom.csv" ]
+}
+```
+
+#### Configuring Remote Git Repository URLs
+
+You can also configure `paths` with any Git remote repository URLs, e.g., GitHub, BitBucket, GitLab. The plugin will then attempt to retrieve any CSV files from the remote repositories.
+
+For example:
+
+- `github.com/codeforamerica/ohana-api//data/sample-csv//*.csv` matches CSV files in the specified repository.
+- `github.com/codeforamerica/ohana-api//data//**/*.csv` matches all CSV files in the specified repository and all subdirectories.
+- `github.com/codeforamerica/ohana-api//data//**/*.csv?ref=v1.2.0` matches all CSV files in the specific tag of a repository.
+- `github.com/codeforamerica/ohana-api//data//**/*.csv` matches all CSV files in the specified folder path.
+
+You can specify a subdirectory after a double-slash (`//`) if you want to download only a specific subdirectory from a downloaded directory.
+
+```hcl
+connection "csv" {
+  plugin = "csv"
+
+  paths = [ "github.com/codeforamerica/ohana-api//data/sample-csv//*.csv" ]
+}
+```
+
+Similarly, you can define a list of GitLab and BitBucket URLs to search for CSV files:
+
+```hcl
+connection "csv" {
+  plugin = "csv"
+
+  paths = [
+    "github.com/codeforamerica/ohana-api//data/sample-csv//*.csv",
+    "bitbucket.org/ved_misra/sample-csv//*.csv",
+    "gitlab.com/subhajit7/example-files//sample-csv-files//*.csv"
+  ]
+}
+```
+
+##### Accessing a Private Bucket
+
+In order to access your files in a private S3 bucket, you will need to configure your credentials. You can use your configured AWS profile from local `~/.aws/config`, or pass the credentials using the standard AWS environment variables, e.g., `AWS_PROFILE`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`.
+  
+We recommend using AWS profiles for authentication.
+
+**Note:** Make sure that `region` is configured in the config. If not set in the config, `region` will be fetched from the standard environment variable `AWS_REGION`.
+
+You can also authenticate your request by setting the AWS profile and region in `paths`. For example:
+
+```hcl
+connection "csv" {
+  plugin = "csv"
+
+  paths = [
+    "s3::https://bucket-2.s3.us-east-1.amazonaws.com//*.csv?aws_profile=<AWS_PROFILE>",
+    "s3::https://bucket-2.s3.us-east-1.amazonaws.com/test_folder//*.csv?aws_profile=<AWS_PROFILE>"
+  ]
+}
+```
 
 ## Get involved
 
