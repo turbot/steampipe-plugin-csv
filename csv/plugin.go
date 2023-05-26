@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/bmatcuk/doublestar"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func Plugin(ctx context.Context) *plugin.Plugin {
@@ -35,19 +35,19 @@ const (
 	gzipExtension string = ".gz"
 )
 
-func PluginTables(ctx context.Context, connection *plugin.Connection) (map[string]*plugin.Table, error) {
+func PluginTables(ctx context.Context, connection *plugin.TableMapData) (map[string]*plugin.Table, error) {
 	// Initialize tables
 	tables := map[string]*plugin.Table{}
 
 	// Search for CSV files to create as tables
-	paths, err := csvList(ctx, connection)
+	paths, err := csvList(ctx, connection.Connection)
 	if err != nil {
 		return nil, err
 	}
 	for _, i := range paths {
 		tableCtx := context.WithValue(ctx, keyPath, i)
 		base := strings.TrimSuffix(filepath.Base(i), gzipExtension)
-		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, connection)
+		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, connection.Connection)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.PluginTables", "create_table_error", err, "path", i)
 			return nil, err
