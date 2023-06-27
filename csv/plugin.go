@@ -45,10 +45,16 @@ func PluginTables(ctx context.Context, d *plugin.TableMapData) (map[string]*plug
 	for _, i := range paths {
 		tableCtx := context.WithValue(ctx, keyPath, i)
 		base := strings.TrimSuffix(filepath.Base(i), gzipExtension)
-		tables[base[0:len(base)-len(filepath.Ext(base))]], err = tableCSV(tableCtx, d.Connection)
+
+		tableData, err := tableCSV(tableCtx, d.Connection)
 		if err != nil {
 			plugin.Logger(ctx).Error("csv.PluginTables", "create_table_error", err, "path", i)
 			return nil, err
+		}
+
+		// Skip the table if the file is empty
+		if tableData != nil {
+			tables[base[0:len(base)-len(filepath.Ext(base))]] = tableData
 		}
 	}
 
