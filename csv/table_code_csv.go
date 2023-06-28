@@ -83,9 +83,9 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 			plugin.Logger(ctx).Error("csv.tableCSV", "header_parse_error", err, "path", path, "header", header)
 			return nil, fmt.Errorf("failed to parse file header %s: %v", path, err)
 		}
-		
+
 		// Return nil if the given file is empty, also add a log message to inform that the file is empty
-		plugin.Logger(ctx).Error("csv.tableCSV", "skipping the file since empty", path)
+		plugin.Logger(ctx).Warn("csv.tableCSV", "skipping the file since empty", path)
 		return nil, nil
 	}
 
