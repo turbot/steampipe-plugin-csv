@@ -18,11 +18,6 @@ import (
 
 func readCSV(ctx context.Context, connection *plugin.Connection, path string) (*csv.Reader, error) {
 
-	// Only allow parsing of one file at a time to prevent concurrent map read
-	// and write errors
-	parseMutex.Lock()
-	defer parseMutex.Unlock()
-
 	file, err := os.Open(path)
 	if err != nil {
 		plugin.Logger(ctx).Error("csv.readCSV", "os_open_error", err, "path", path)
