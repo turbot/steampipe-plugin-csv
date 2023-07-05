@@ -1,3 +1,9 @@
+## v0.10.0 [2023-07-05]
+
+_Bug fixes_
+
+- Fixed the plugin to display a warning message if the given csv file is empty. ([#64](https://github.com/turbot/steampipe-plugin-csv/pull/64))
+
 ## v0.9.0 [2023-06-20]
 
 _Dependencies_
