@@ -1,13 +1,13 @@
 ## v0.10.0 [2023-09-14]
 
-_Enhancements_
+_Bug fixes_
 
-- Added missing `S3 go-getter` examples in `index.md` doc.
+- Added the missing [S3 go-getter](https://hub.steampipe.io/plugins/turbot/csv#configuring-s3-urls) examples in the `docs/index.md` file.
 
 _Dependencies_
 
 - Recompiled plugin with [steampipe-plugin-sdk v5.5.1](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v551-2023-07-26). ([#70](https://github.com/turbot/steampipe-plugin-csv/pull/70))
-- Recompiled plugin with `github.com/turbot/go-kit from v0.8.0`. ([#71](https://github.com/turbot/steampipe-plugin-csv/pull/71))
+- Recompiled plugin with `github.com/turbot/go-kit v0.8.0`. ([#71](https://github.com/turbot/steampipe-plugin-csv/pull/71))
 
 ## v0.9.1 [2023-07-05]
 
