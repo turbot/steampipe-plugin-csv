@@ -2,7 +2,7 @@
 
 _Dependencies_
 
-- Recompiled plugin with [steampipe-plugin-sdk v5.6.2](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v562-2023-10-03) which prevents nil pointer reference errors for implicit hydrate configs. ([#142](https://github.com/turbot/steampipe-plugin-azuread/pull/142))
+- Recompiled plugin with [steampipe-plugin-sdk v5.6.2](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v562-2023-10-03) which prevents nil pointer reference errors for implicit hydrate configs. ([#77](https://github.com/turbot/steampipe-plugin-csv/pull/77))
 
 ## v0.11.0 [2023-10-02]
 
