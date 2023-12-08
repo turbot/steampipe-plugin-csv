@@ -1,39 +1,17 @@
-# Table: {csv_filename}
+---
+title: "Steampipe Table: csv_filename - Query OCI CSV Files using SQL"
+description: "Allows users to query CSV Files in OCI, specifically to extract, transform, and load data from CSV files for analysis and reporting."
+---
 
-Query data from CSV files. A table is automatically created to represent each
-CSV file found in the configured `paths`.
+# Table: csv_filename - Query OCI CSV Files using SQL
 
-For instance, if `paths` is set to `/Users/myuser/csv/*.csv`, and that directory contains:
+Oracle Cloud Infrastructure (OCI) CSV Files are a type of structured data file format that stores tabular data, such as a spreadsheet or database in plain text. These files can be easily imported and exported from programs that store data in tables, such as Microsoft Excel or Open Office Calc. CSV files are primarily used to transport data between applications that handle lots of data, and they support a wide array of data types and are flexible in terms of what type of data they can hold.
 
-- products.csv:
-  ```csv
-  product_name,sku
-  Paper,P001
-  Better Paper,P002
-  ```
-- users.csv:
-  ```csv
-  first_name,last_name,email
-  Michael,Scott,mscott@dmi.com
-  Dwight,Schrute,dschrute@dmi.com
-  Pamela,Beesly,pbeesly@dmi.com
-  ```
+## Table Usage Guide
 
-This plugin will create 2 tables:
+The `csv_filename` table provides insights into the data stored within CSV files in OCI. As a data analyst, you can leverage this table to extract, transform, and load data from CSV files for in-depth analysis and reporting. Use it to uncover valuable insights from your data, such as identifying trends, patterns, and correlations. 
 
-- products
-- users
-
-Which you can then query directly:
-
-```sql
-select
-  *
-from
-  users;
-```
-
-All column values are returned as text data type.
+Schema link: [https://hub.steampipe.io/plugins/turbot/csv/tables/csv_filename](https://hub.steampipe.io/plugins/turbot/csv/tables/csv_filename)
 
 ## Examples
 
@@ -67,10 +45,18 @@ To get defails for a specific table, inspect it by name:
 ```
 
 ### Query a simple file
-
+Explore all user data to gain a comprehensive understanding of your user base. This could be beneficial in identifying trends, understanding user behavior, and informing strategic decisions.
 Given the file `users.csv`, the query is:
 
-```sql
+
+```sql+postgres
+select
+  *
+from
+  users;
+```
+
+```sql+sqlite
 select
   *
 from
@@ -78,21 +64,38 @@ from
 ```
 
 ### Query a complex file name
-
+Explore the intricacies of a complex file by analyzing its various attributes. This is useful for understanding the file's structure and content in a comprehensive manner.
 Given the file `My complex file-name.csv`, the query uses identifier quotes:
 
-```sql
+
+```sql+postgres
 select
   *
 from
   "My complex file-name"
 ```
 
-### Query specific columns
+```sql+sqlite
+select
+  *
+from
+  `My complex file-name`
+```
 
+### Query specific columns
+Determine the areas in which you want to focus by selecting specific user details. This is useful when you want to narrow down your data analysis to specific user attributes.
 Columns are always in text form when read from the CSV file. The column names come from the first row of the file.
 
-```sql
+
+```sql+postgres
+select
+  first_name,
+  last_name
+from
+  users
+```
+
+```sql+sqlite
 select
   first_name,
   last_name
@@ -102,7 +105,15 @@ from
 
 If your column names are complex, use identifier quotes:
 
-```sql
+```sql+postgres
+select
+  "First Name",
+  "Last Name"
+from
+  users
+```
+
+```sql+sqlite
 select
   "First Name",
   "Last Name"
@@ -111,10 +122,11 @@ from
 ```
 
 ### Casting column data for analysis
-
+Analyze the settings to understand which users are older than 25. This can be useful in tailoring age-specific content or offers.
 Text columns can be easily cast to other types:
 
-```sql
+
+```sql+postgres
 select
   first_name,
   age::int as iage
@@ -124,8 +136,18 @@ where
   iage > 25
 ```
 
-### Query multiple CSV files
+```sql+sqlite
+select
+  first_name,
+  CAST(age as INTEGER) as iage
+from
+  users
+where
+  CAST(age as INTEGER) > 25
+```
 
+### Query multiple CSV files
+Determine the contents of multiple CSV files in a unified view. This is beneficial when needing to analyze or compare data from multiple sources simultaneously.
 Given this data:
 
 ips1.csv:
@@ -147,7 +169,13 @@ service5,85.188.10.179
 
 You can query both files like so:
 
-```sql
+
+```sql+postgres
+create view all_ips as select * from ips1 union select * from ips2;
+select * from all_ips
+```
+
+```sql+sqlite
 create view all_ips as select * from ips1 union select * from ips2;
 select * from all_ips
 ```
