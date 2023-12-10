@@ -1,17 +1,52 @@
 ---
-title: "Steampipe Table: csv_filename - Query OCI CSV Files using SQL"
-description: "Allows users to query CSV Files in OCI, specifically to extract, transform, and load data from CSV files for analysis and reporting."
+title: "Steampipe Table: {csv_filename} - Query CSV Files using SQL"
+description: "Allows users to query CSV Files, specifically to extract, transform, and load data from CSV files for analysis and reporting."
 ---
 
-# Table: csv_filename - Query OCI CSV Files using SQL
+# Table: {csv_filename} - Query CSV Files using SQL
 
-Oracle Cloud Infrastructure (OCI) CSV Files are a type of structured data file format that stores tabular data, such as a spreadsheet or database in plain text. These files can be easily imported and exported from programs that store data in tables, such as Microsoft Excel or Open Office Calc. CSV files are primarily used to transport data between applications that handle lots of data, and they support a wide array of data types and are flexible in terms of what type of data they can hold.
+CSV Files are a type of structured data file format that stores tabular data, such as a spreadsheet or database in plain text. These files can be easily imported and exported from programs that store data in tables, such as Microsoft Excel or Open Office Calc. CSV files are primarily used to transport data between applications that handle lots of data, and they support a wide array of data types and are flexible in terms of what type of data they can hold.
 
 ## Table Usage Guide
 
-The `csv_filename` table provides insights into the data stored within CSV files in OCI. As a data analyst, you can leverage this table to extract, transform, and load data from CSV files for in-depth analysis and reporting. Use it to uncover valuable insights from your data, such as identifying trends, patterns, and correlations. 
+The `csv_filename` table provides insights into the data stored within CSV files. As a data analyst, you can leverage this table to extract, transform, and load data from CSV files for in-depth analysis and reporting. Use it to uncover valuable insights from your data, such as identifying trends, patterns, and correlations. 
 
 Schema link: [https://hub.steampipe.io/plugins/turbot/csv/tables/csv_filename](https://hub.steampipe.io/plugins/turbot/csv/tables/csv_filename)
+
+Query data from CSV files. A table is automatically created to represent each
+CSV file found in the configured `paths`.
+
+For instance, if `paths` is set to `/Users/myuser/csv/*.csv`, and that directory contains:
+
+- products.csv:
+  ```csv
+  product_name,sku
+  Paper,P001
+  Better Paper,P002
+  ```
+- users.csv:
+  ```csv
+  first_name,last_name,email
+  Michael,Scott,mscott@dmi.com
+  Dwight,Schrute,dschrute@dmi.com
+  Pamela,Beesly,pbeesly@dmi.com
+  ```
+
+This plugin will create 2 tables:
+
+- products
+- users
+
+Which you can then query directly:
+
+```sql
+select
+  *
+from
+  users;
+```
+
+All column values are returned as text data type.
 
 ## Examples
 
@@ -72,14 +107,14 @@ Given the file `My complex file-name.csv`, the query uses identifier quotes:
 select
   *
 from
-  "My complex file-name"
+  "My complex file-name";
 ```
 
 ```sql+sqlite
 select
   *
 from
-  `My complex file-name`
+  "My complex file-name";
 ```
 
 ### Query specific columns
@@ -92,7 +127,7 @@ select
   first_name,
   last_name
 from
-  users
+  users;
 ```
 
 ```sql+sqlite
@@ -100,7 +135,7 @@ select
   first_name,
   last_name
 from
-  users
+  users;
 ```
 
 If your column names are complex, use identifier quotes:
@@ -110,7 +145,7 @@ select
   "First Name",
   "Last Name"
 from
-  users
+  users;
 ```
 
 ```sql+sqlite
@@ -118,7 +153,7 @@ select
   "First Name",
   "Last Name"
 from
-  users
+  users;
 ```
 
 ### Casting column data for analysis
@@ -133,7 +168,7 @@ select
 from
   users
 where
-  iage > 25
+  iage > 25;
 ```
 
 ```sql+sqlite
@@ -143,7 +178,7 @@ select
 from
   users
 where
-  CAST(age as INTEGER) > 25
+  CAST(age as INTEGER) > 25;
 ```
 
 ### Query multiple CSV files
@@ -172,12 +207,12 @@ You can query both files like so:
 
 ```sql+postgres
 create view all_ips as select * from ips1 union select * from ips2;
-select * from all_ips
+select * from all_ips;
 ```
 
 ```sql+sqlite
 create view all_ips as select * from ips1 union select * from ips2;
-select * from all_ips
+select * from all_ips;
 ```
 
 ## Column Names
