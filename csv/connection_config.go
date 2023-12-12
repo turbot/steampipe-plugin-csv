@@ -11,22 +11,6 @@ type csvConfig struct {
 	Header    *string  `hcl:"header"`
 }
 
-// var ConfigSchema = map[string]*schema.Attribute{
-// 	"paths": {
-// 		Type: schema.TypeList,
-// 		Elem: &schema.Attribute{Type: schema.TypeString},
-// 	},
-// 	"separator": {
-// 		Type: schema.TypeString,
-// 	},
-// 	"comment": {
-// 		Type: schema.TypeString,
-// 	},
-// 	"header": {
-// 		Type: schema.TypeString,
-// 	},
-// }
-
 func ConfigInstance() interface{} {
 	return &csvConfig{}
 }
