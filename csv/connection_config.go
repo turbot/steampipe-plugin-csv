@@ -5,7 +5,7 @@ import (
 )
 
 type csvConfig struct {
-	Paths     []string `hcl:"paths" steampipe:"watch"`
+	Paths     []string `hcl:"paths,optional" steampipe:"watch"`
 	Separator *string  `hcl:"separator"`
 	Comment   *string  `hcl:"comment"`
 	Header    *string  `hcl:"header"`
