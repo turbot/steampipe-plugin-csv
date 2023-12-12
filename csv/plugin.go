@@ -16,7 +16,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		Name: "steampipe-plugin-csv",
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
-			Schema:      ConfigSchema,
+			// Schema:      ConfigSchema,
 		},
 		DefaultTransform: transform.FromGo().NullIfZero(),
 		SchemaMode:       plugin.SchemaModeDynamic,

@@ -8,6 +8,7 @@ short_name: "csv"
 description: "Steampipe plugin to query data from CSV files."
 og_description: "Query CSV files with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/csv-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # CSV + Steampipe
@@ -258,7 +259,4 @@ connection "config" {
 }
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-csv
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
