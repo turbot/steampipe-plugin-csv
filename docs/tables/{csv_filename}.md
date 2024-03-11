@@ -11,7 +11,7 @@ CSV Files are a type of structured data file format that stores tabular data, su
 
 The `csv_filename` table provides insights into the data stored within CSV files. As a data analyst, you can leverage this table to extract, transform, and load data from CSV files for in-depth analysis and reporting. Use it to uncover valuable insights from your data, such as identifying trends, patterns, and correlations. 
 
-Schema link: [https://hub.steampipe.io/plugins/turbot/csv/tables/csv_filename](https://hub.steampipe.io/plugins/turbot/csv/tables/csv_filename)
+Schema link: [https://hub.steampipe.io/plugins/turbot/csv/tables/csv_filename](https://hub.steampipe.io/plugins/turbot/csv/tables/%7Bcsv_filename%7D)
 
 Query data from CSV files. A table is automatically created to represent each
 CSV file found in the configured `paths`.
