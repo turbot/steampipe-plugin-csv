@@ -123,7 +123,7 @@ func tableCSV(ctx context.Context, connection *plugin.Connection) (*plugin.Table
 	case "on":
 		if !isValidHeader {
 			plugin.Logger(ctx).Error("csv.tableCSV", "invalid_header_error", invalidReason, "path", path)
-			return nil, fmt.Errorf(invalidReason)
+			return nil, fmt.Errorf("%s", invalidReason)
 		}
 	}
 
