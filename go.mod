@@ -1,12 +1,11 @@
 module github.com/turbot/steampipe-plugin-csv
 
 go 1.22.4
-
-toolchain go1.22.6
+toolchain go1.23.6
 
 require (
 	github.com/dimchansky/utfbom v1.1.1
-	github.com/turbot/go-kit v0.10.0-rc.0
+	github.com/turbot/go-kit v1.1.0
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.4
 )
 
