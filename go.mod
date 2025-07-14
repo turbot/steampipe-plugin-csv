@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/dimchansky/utfbom v1.1.1
-	github.com/turbot/go-kit v1.1.0
+	github.com/turbot/go-kit v1.3.0
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.11.7
 )
 
