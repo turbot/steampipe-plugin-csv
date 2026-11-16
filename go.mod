@@ -3,7 +3,7 @@ module github.com/turbot/steampipe-plugin-csv
 go 1.26.0
 
 require (
-	github.com/dimchansky/utfbom v1.1.1
+	github.com/dimchansky/utfbom v1.2.0
 	github.com/turbot/go-kit v1.3.1
 	github.com/turbot/steampipe-plugin-sdk/v6 v6.2.1
 )
